@@ -1,0 +1,31 @@
+#meetings-table td.editable-cell {
+    cursor: pointer;
+    min-width: 80px;
+}
+
+#meetings-table td.editable-cell:hover {
+    background-color: #f8f9fa;
+}
+
+#meetings-table td.editable-cell input,
+#meetings-table td.editable-cell select,
+#meetings-table td.editable-cell textarea {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: inherit;
+}
+
+#meetings-table td.editable-cell textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.empty-row {
+    font-style: italic;
+    color: #6c757d;
+    text-align: center;
+}
+
+.btn-add-row {
+    margin-right: 10px;
+}
