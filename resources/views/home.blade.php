@@ -117,7 +117,7 @@
             <div class="card">
 
               <div class="card-body">
-                <h5 class="card-title">Reports <span>/Today</span></h5>
+                <h5 class="card-title">Reports <span style="color: #012970"> | Today</span></h5>
 
                 <!-- Line Chart -->
                 <div id="reportsChart"></div>
@@ -174,7 +174,7 @@
             <div class="card recent-sales overflow-auto">
 
               <div class="card-body">
-                <h5 class="card-title">Leaves Status <span>| Today</span></h5>
+                <h5 class="card-title">Leaves Status <span style="color: #012970">| Today</span></h5>
 
                 <div class="table-responsive">
                   <table class="table table-responsive">
@@ -288,7 +288,7 @@
         <!-- Recent Activity -->
         <!-- <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Recent Activity <span>| Today</span></h5>
+          <h5 class="card-title">Recent Activity <span> | Today</span></h5>
 
           <div class="activity">
 
@@ -349,7 +349,7 @@
         <!-- Budget Report -->
         <!-- <div class="card">
         <div class="card-body pb-0">
-          <h5 class="card-title">Budget Report <span>| This Month</span></h5>
+          <h5 class="card-title">Budget Report <span> | This Month</span></h5>
 
           <div id="budgetChart" style="min-height: 400px;" class="echart"></div>
 
@@ -411,7 +411,7 @@
         <div class="card">
 
           <div class="card-body pb-0">
-            <h5 class="card-title">Attandance<span>| Today</span></h5>
+            <h5 class="card-title">Attandance<span style="color: #012970"> | Today</span></h5>
 
             <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 

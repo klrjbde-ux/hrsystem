@@ -57,10 +57,10 @@ class Employee extends Model
         return $this->belongsTo(Department::class, 'department');
     }
 
-    public function employeeContactRelation()
-    {
-        return $this->belongsTo(EmployeeContactRelation::class, 'relation');
-    }
+   public function employeeContactRelation()
+{
+    return $this->belongsTo(EmployeeContactRelation::class, 'relation_id');
+}
 
     // public function user()
     // {

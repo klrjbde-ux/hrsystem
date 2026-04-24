@@ -34,7 +34,7 @@
                         <label for="site_link" class="form-label">Site Link</label>
                         <input type="url" name="site_link" id="site_link" value="{{ old('site_link') }}" class="form-control">
                         @error('site_link')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -43,7 +43,7 @@
                         <label for="project_file" class="form-label">Project File</label>
                         <input type="file" name="project_file" id="project_file" class="form-control">
                         @error('project_file')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -61,22 +61,24 @@
                         <label for="end_date" class="form-label">End Date</label>
                         <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="form-control">
                         @error('end_date')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    {{-- Status --}}
+                    {{-- Priority --}}
                     <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select name="status" id="status" class="form-select" required>
-                            <option value="not_started" {{ old('status') == 'not_started' ? 'selected' : '' }}>Not Started</option>
-                            <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <label for="priority" class="form-label">Priority</label>
+                        <select name="priority" id="priority" class="form-select" required>
+                            @foreach($priorities as $priority)
+                            <option value="{{ $priority }}" {{ old('priority') == $priority ? 'selected' : '' }}>
+                                {{ ucfirst($priority) }}
+                            </option>
+                            @endforeach
                         </select>
-                        @error('status')
-                            <span class="text-danger">{{ $message }}</span>
+                        @error('priority')
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+                    
 
                     <button type="submit" class="btn btn-primary">Create Project</button>
                 </form>

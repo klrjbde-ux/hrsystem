@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['task_id', 'user_id', 'comment', 'parent_comment_id', 'is_edited'];
+    protected $fillable = ['task_id', 'user_id', 'attachment', 'comment', 'parent_comment_id', 'is_edited'];
 
     public function user()
     {
@@ -26,4 +26,7 @@ class Comment extends Model
     {
         return $this->belongsTo(Task::class);
     }
+    protected $casts = [
+    'attachment' => 'array',
+];
 }

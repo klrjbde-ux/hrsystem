@@ -56,7 +56,7 @@
                                 <div class="col-md-6">
                                     <label for="lasstname" class="form-label">Last Name<span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="lastname" maxlength="20" pattern="[A-Za-z ]+"
+                                    <input type="text" name="lastname" maxlength="20" pattern="^(?=.*[A-Za-z])[A-Za-z ]+$"
                                         class="form-control" id="lastname" placeholder="Enter Last Name"
                                         value="{{ $employee->lastname }}" required>
                                     <div class="invalid-feedback" id="lastname-feedback">
@@ -112,14 +112,7 @@
                                         Please select
                                         a date of birth </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="gender" class="form-label">Profile Picture <span
-                                            class="text-danger">*</span></label>
-                                    <input type="file" name="image" class="form-control" id="image"
-                                        accept=".jpg, .jpeg, .png">
-
-
-                                </div>
+                               
 
                             </div>
                             <!-- emp_type && Emp_Status -->
@@ -340,10 +333,10 @@
                                         <option value="">Select Relation</option>
 
                                         @foreach ($relations as $relation)
-                                        <option value="{{ $relation->contact_name }}"
-                                            {{ $employee->relation === $relation->contact_name ? 'selected' : '' }}>
-                                            {{ $relation->contact_name }}
-                                        </option>
+                                       <option value="{{ $relation->id }}"
+    {{ $employee->relation_id == $relation->id ? 'selected' : '' }}>
+    {{ $relation->contact_name }}
+</option>
                                         @endforeach
                                     </select>
 

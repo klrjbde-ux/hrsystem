@@ -55,12 +55,11 @@
                                 <div class="col-md-6">
                                     <label for="lasstname" class="form-label">Last Name<span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="lastname" maxlength="20" pattern="[A-Za-z ]+"
+                                    <input type="text" name="lastname" maxlength="20"pattern="^(?=.*[A-Za-z])[A-Za-z ]+$"
                                         class="form-control" id="lastname" placeholder="Enter Last Name" required>
                                     <div class="invalid-feedback" id="lastname-feedback">
                                         <span id="empty-message-lastname">Please enter a last name</span>
-                                        <span id="pattern-message-lastname" style="display: none;">Only letters and
-                                            spaces are allowed</span>
+                                        <span id="pattern-message-lastname" style="display: none;">Only alphabetic letters are allowed</span>
                                     </div>
 
                                 </div>
@@ -113,14 +112,7 @@
                                         a date of birth </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label for="gender" class="form-label">Profile Picture <span
-                                            class="text-danger">*</span></label>
-                                    <input type="file" name="image" class="form-control" id="image"
-                                        accept=".jpg, .jpeg, .png">
-
-
-                                </div>
+                                
 
                             </div>
 
@@ -322,14 +314,15 @@
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <label class="relation">Emergency Contact Relationship<span
                                             class="text-danger">*</span></label>
-                                    <select class="form-select mt-2" name="relation" required>
-                                        <option value="">Select...</option>
-                                        @foreach ($relations as $relation)
-                                        <option value="{{ $relation->contact_name }}">
-                                            {{ $relation->contact_name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                                  <select class="form-select mt-2" name="relation_id" required>
+    <option value="">Select...</option>
+
+    @foreach ($relations as $relation)
+        <option value="{{ $relation->id }}">
+            {{ $relation->contact_name }}
+        </option>
+    @endforeach
+</select>
 
                                     <div class="invalid-feedback">Please enter a emergency contact relationship</div>
                                 </div>

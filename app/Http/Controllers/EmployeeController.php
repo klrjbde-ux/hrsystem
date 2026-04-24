@@ -180,6 +180,7 @@ class EmployeeController extends Controller
 
 public function update(Request $request, $id)
 {
+   
     $employee = Employee::findOrFail($id);
     $emp_email = $employee->personal_email;
     $user = User::where('email', $emp_email)->first();
@@ -223,7 +224,8 @@ public function update(Request $request, $id)
                 }
             }
         } catch (\Exception $e) {
-        }
+    dd($e->getMessage());
+}
     }
     $employee->firstname = $request->firstname;
     $employee->lastname = $request->lastname;
@@ -235,23 +237,21 @@ public function update(Request $request, $id)
     $employee->designation = $request->designation;
     $employee->department = $request->department;
     $employee->branch = $request->branch;
-    $employee->department = $request->department;
     $employee->joining_date = $request->joining_date;
     $employee->contact_no = $request->contact_no;
     $employee->identity_no = $request->identity_no;
     $employee->permanent_address = $request->permanent_address;
     $employee->current_address = $request->current_address;
     $employee->emergency_contact = $request->emergency_contact;
-    $employee->relation = $request->relation;
+    $employee->relation_id = $request->relation;
     $employee->emergency_contact_address = $request->emergency_contact_address;
     $employee->gross_salary = $request->gross_salary;
 
-    try {
-        $employee->save();
-
-    } catch (\Exception $e) {
-
-    }
+  try {
+    $employee->save();
+} catch (\Exception $e) {
+    dd($e->getMessage()); // 🔥 show real error
+}
 
     if ($user) {
         $user_id = $user->id;
@@ -323,44 +323,48 @@ public function update(Request $request, $id)
         return redirect()->route('employees.index')->with('success', 'Employee deleted successfully');
     }
     public function updateProfile(Request $request)
-    {
-        // Validate the incoming request
-        $validator = Validator::make($request->all(), [
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
 
-        $id = $request->id;
-        $employee = Employee::find($id);
+    $user = Auth::user();
 
-        if (!$employee) {
-            return redirect()->back()->with('error', 'Employee not found');
-        }
+    // Find employee (may or may not exist)
+    $employee = Employee::where('personal_email', $user->email)->first();
 
-        $email = $employee->personal_email;
-        $user = User::where('email', $email)->first();
+    if ($request->file('image')) {
 
-        if ($request->file('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/assets/profile_images', $imageName);
-
-            // Update the employee image
-            $employee->image = $imageName;
-            $employee->save();
-
-            // Update the user image if user exists
-            if ($user) {
-                $user->image = $imageName;
-                $user->save();
+        // Delete old user image
+        if ($user->image) {
+            $oldPath = 'public/assets/profile_images/' . $user->image;
+            if (Storage::exists($oldPath)) {
+                Storage::delete($oldPath);
             }
         }
 
-        return redirect()->back()->with('success', 'Profile updated successfully');
+        // Upload new image
+        $image = $request->file('image');
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->storeAs('public/assets/profile_images', $imageName);
+
+        // ✅ ALWAYS update user
+        $user->image = $imageName;
+        $user->save();
+
+        // ✅ Update employee IF exists
+        if ($employee) {
+            $employee->image = $imageName;
+            $employee->save();
+        }
     }
+
+    return redirect()->back()->with('profile_updated', 'Profile updated successfully');
+}
 
     public function changePassword(Request $request)
     {
@@ -425,4 +429,13 @@ public function update(Request $request, $id)
         $roles = Role::all();
         return view('Employe.accountsetting', compact('employee', 'empTypes', 'EmpStatus', 'designations', 'departments', 'relations', 'roles', 'user_role'));
     }
+    public function myProfile()
+{
+    $user = Auth::user();
+
+    // Try to find employee via email
+    $employee = Employee::where('personal_email', $user->email)->first();
+
+    return view('Employe.myprofile_admin', compact('user', 'employee'));
+}
 }

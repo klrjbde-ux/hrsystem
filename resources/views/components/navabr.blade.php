@@ -81,26 +81,28 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
                         <h6>{{ $user->name }}</h6>
-                        <span>{{ $employee?->designation?->designation_name ?? 'N/A' }}</span>
+                        <span>{{ $user->roles->pluck('name')->first() }}</span>
                     </li>
 
                     <li>
                         <hr class="dropdown-divider">
                     </li>
 
-                    @if($employee)
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center"
-                            href="{{ route('myprofile.show', $employee->id) }}">
-                            <i class="bi bi-person"></i>
-                            <span>My Profile</span>
-                        </a>
-                    </li>
+                    
+                    @role('admin|hr_manager|employee')
+<li>
+    <a class="dropdown-item d-flex align-items-center"
+        href="{{ route('my.profile') }}">
+        <i class="bi bi-person"></i>
+        <span>My Profile</span>
+    </a>
+</li>
+@endrole
 
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-
+@if($employee)
                     <li>
                         <a class="dropdown-item d-flex align-items-center"
                             href="{{ route('accountsetting.show', $employee->id) }}">

@@ -28,7 +28,6 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RoutineController;
-use App\Http\Controllers\Auth\RegisterController; // <-- add this
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\InterviewController;
@@ -60,7 +59,6 @@ Route::get('/addemployee', [EmployeeController::class, 'EmployeDetails'])->name(
 Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    // Auth::routes(['register' => false]); // disables default /register
 
 
 
@@ -68,16 +66,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::get('myprofile/{employee}', [EmployeeController::class, 'show'])->name('myprofile.show');
-    #Route::post('/register', 'Auth\RegisterController@register')->name('register');
-    // Route::post('/register_ak', [RegisterController::class, 'register'])->name('cust_register');
-    // Route::get('/register_ak', [RegisterController::class, 'showRegistrationForm'])->name('register.form');
+    Route::post('/register', 'Auth\RegisterController@register')->name('register');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
-    Route::put('/employee/{id?}', [EmployeeController::class, 'update'])->name('employee.update');
+    Route::put('/employee/{id}', [EmployeeController::class, 'update'])->name('employee.update');
 
     Route::get('/edit/{id}', [EmployeeController::class, 'edit'])->name('employee.edit');
 
     Route::get('/delete/{id}', [EmployeeController::class, 'delete'])->name('employee.delete');
     Route::get('accountsetting/{employee}', [EmployeeController::class, 'account_setting'])->name('accountsetting.show');
+    Route::get('/my-profile', [EmployeeController::class, 'myProfile'])->name('my.profile');
 
 
     // Route::get('/leaves', [LeaveController::class, 'totalLeaves'])->name('totalleaves');
@@ -183,19 +180,18 @@ Route::middleware('auth')->group(function () {
 
     // Daily Standup (Admin & HR only)
     Route::middleware(['role:admin|hr_manager'])->group(function () {
-        Route::prefix('daily-standup')->group(function () {
-            Route::get('/', [DailyStandupController::class, 'index'])->name('dailystandup.index');
-            Route::get('/create', [DailyStandupController::class, 'create'])->name('dailystandup.create');
-            Route::post('/', [DailyStandupController::class, 'store'])->name('dailystandup.store');
-            Route::post('/store-ajax', [DailyStandupController::class, 'storeAjax'])->name('dailystandup.storeAjax');
-            Route::get('/manage', [DailyStandupController::class, 'manage'])->name('dailystandup.manage');
-            Route::get('/data', [DailyStandupController::class, 'dataList'])->name('dailystandup.data');
-            Route::post('/update-ajax', [DailyStandupController::class, 'updateAjax'])->name('dailystandup.updateAjax');
-            Route::post('/delete-ajax', [DailyStandupController::class, 'destroyAjax'])->name('dailystandup.deleteAjax');
-            Route::get('/{id}/edit', [DailyStandupController::class, 'edit'])->name('dailystandup.edit');
-            Route::post('/{id}', [DailyStandupController::class, 'update'])->name('dailystandup.update');
-            Route::get('/{id}/delete', [DailyStandupController::class, 'destroy'])->name('dailystandup.delete');
-        });
+        Route::get('/daily-standup', [DailyStandupController::class, 'index'])->name('dailystandup.index');
+        Route::get('/daily-standup/create', [DailyStandupController::class, 'create'])->name('dailystandup.create');
+        Route::post('/daily-standup', [DailyStandupController::class, 'store'])->name('dailystandup.store');
+        Route::get('/daily-standup/{id}/edit', [DailyStandupController::class, 'edit'])->name('dailystandup.edit');
+        Route::post('/daily-standup/{id}', [DailyStandupController::class, 'update'])->name('dailystandup.update');
+        Route::get('/daily-standup/{id}/delete', [DailyStandupController::class, 'destroy'])->name('dailystandup.delete');
+
+        Route::get('/manage', [DailyStandupController::class, 'manage'])->name('dailystandup.manage');
+        Route::get('/data', [DailyStandupController::class, 'dataList'])->name('dailystandup.data');
+        Route::post('/store-ajax', [DailyStandupController::class, 'storeAjax'])->name('dailystandup.storeAjax');
+        Route::post('/update-ajax', [DailyStandupController::class, 'updateAjax'])->name('dailystandup.updateAjax');
+        Route::post('/delete-ajax', [DailyStandupController::class, 'destroyAjax'])->name('dailystandup.deleteAjax');
     });
 
 
@@ -418,8 +414,6 @@ Route::delete('/employee-interviews/{id}', [EmployeeInterviewController::class, 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-
-
 // Show login form
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
@@ -479,15 +473,19 @@ Route::resource('files', FileController::class);
 Route::resource('notes', NoteController::class);
 Route::resource('reminders', ReminderController::class);
 Route::resource('checklist-items', ChecklistItemController::class);
-Route::get('checklist-items/{checklistItem}/update-status', [ChecklistItemController::class, 'updateStatus'])->name('checklist-items.update-status');
+Route::post('checklist-items/{checklistItem}/update-status', [ChecklistItemController::class, 'updateStatus'])
+    ->name('checklist-items.update-status');
 Route::get('/my-tasks', [TaskController::class, 'myTasks'])->name('my.tasks');
-
 
 
 Route::get('/tasks/{task}/comments', [TaskController::class, 'getComments']);
 Route::post('/tasks/{task}/comments', [TaskController::class, 'addComment']);
 
-Route::put('/comments/{id}', [TaskController::class, 'updateComment']);
+Route::post('/comments/{id}', [TaskController::class, 'updateComment']);
 Route::delete('/comments/{id}', [TaskController::class, 'deleteComment']);
 
 Route::get('/comments/{comment}/history', [TaskController::class, 'commentHistory']);
+Route::post('/projects/remove-member', [ProjectController::class, 'removeMember'])
+    ->name('projects.removeMember');
+Route::post('/comments/{id}/delete-image', [TaskController::class, 'deleteImage']);
+Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');

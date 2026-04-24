@@ -17,7 +17,7 @@
               <div class="card mb-6" style="width: 100%; max-width: 960px;">
                 <div class="card-body">
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Leave Form</h5>
+                    <h5 class="card-title text-center pb-0 fs-4">Designation</h5>
                   </div>
                   <form class="row g-3 needs-validation" validate action="{{ Route('desigstore') }}" method="post">
                     @csrf
@@ -26,13 +26,13 @@
                     <div class="row col-12 gap">
                       <div class="col-md-6">
                         <label for="dsg" class="form-label">Designation Name<span class="text-danger">*</span></label>
-                        <input type="text" name="designation_name" class="form-control" id="dsg" placeholder="For what reason you want leave" required>
+                        <input type="text" name="designation_name" class="form-control" id="dsg" placeholder="Please, enter Designation Name" required>
                         <div class="invalid-feedback">Please, enter Designation Name!</div>
                       </div>
                     </div>
                     <div class="row pt-20px gap">
                       <div class="col-3 col-md-4 offset-4">
-                        <button class="btn btn-primary w-100" type="submit">Submit Leave Request</button>
+                        <button class="btn btn-primary w-100" type="submit">Add Designation</button>
                       </div>
                     </div>
 

@@ -8,7 +8,7 @@
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/home">Home</a></li>
-        <li class="breadcrumb-item"><a href="/home">Employees</a></li>
+        <li class="breadcrumb-item"><a href="/employees">Employees</a></li>
         <li class="breadcrumb-item active">Profile</li>
 
       </ol>
@@ -18,42 +18,33 @@
   <section class="section profile">
     <div class="row">
       <div class="col-xl-4">
+  <div class="card">
 
-        <div class="card">
+    <div class="container profile-container text-center pt-4">
 
-          <form action="{{ route('profile') }}" method="POST" enctype="multipart/form-data" class="upload">
-            <div class="container profile-container">
-              <div class="profile-image-container">
+      {{-- IMAGE --}}
+      @if($employee->image)
+        <img src="{{ asset('storage/assets/profile_images/' . $employee->image) }}"
+             class="rounded-circle mb-3"
+             width="130" height="130">
+      @else
+        <img src="{{ asset('storage/assets/profile_image/img2.jpeg') }}"
+             class="rounded-circle mb-3"
+             width="130" height="130">
+      @endif
 
-                @csrf
-                <input type="text" name="id" value="{{ $employee->id }}" style="display:none ">
-                @if($employee->image)
-                <img src="{{ asset('storage/assets/profile_images/' . $employee->image) }}"
-                  id="profileImage" />
-                @else
-                <img src="{{ asset('storage/assets/profile_image/img2.jpeg') }}" width="125px" height="125px" id="profileImage" />
-                @endif
+      {{-- NAME --}}
+      <h5>{{ $employee->firstname }} {{ $employee->lastname }}</h5>
 
-                <div class="round">
-                  <i class="fa fa-camera camera-icon" style="color: #fff;"></i>
-                  <input type="file" name="image" id="image" accept=".jpg, .jpeg, .png">
-                </div>
-              </div>
-              <div class="profile-name">{{ $employee->firstname }}</div>
-              <div class="profile-designation">
-                {{ $employee->designation ?? 'N/A' }}
-              </div>
-              {{-- <input type="text" class="name-input" value="John Doe"> --}}
-              <div class="save-buttons" id="saveButtons">
-                <button type="submit" class="btn btn-primary" id="saveButton" style="font-size:0.8rem">Save Changes</button>
-                <button type="button" class="btn btn-secondary" id="cancelButton" style="font-size:0.8rem">Discard Changes</button>
-              </div>
-              <br>
-            </div>
+      {{-- DESIGNATION --}}
+      <p class="text-muted">
+        {{ $employee->designation ?? 'N/A' }}
+      </p>
 
-          </form>
-        </div>
-      </div>
+    </div>
+
+  </div>
+</div>
       <div class="col-xl-8">
 
         <div class="card">
@@ -75,9 +66,7 @@
               </li>
 
 
-              <li class="nav-item">
-                <button class="nav-link {{ session('section') == 'profile-change-password' ? 'active' : '' }}" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
-              </li>
+           
 
             </ul>
             <div class="tab-content pt-2">
@@ -132,7 +121,7 @@
                 <div class="row">
                   <div class="col-lg-3 col-md-4 label">Relation</div>
                   <div class="col-lg-9 col-md-8">
-                    {{ $employee->relation ?? 'N/A' }}
+                    {{ $employee->employeeContactRelation->contact_name ?? 'N/A' }}
                   </div>
 
                 </div>
@@ -162,51 +151,7 @@
                 </div>
                 @enderror
               </div>
-              <div class="tab-pane fade pt-3  {{session('section')  == 'profile-change-password' ? 'show active' : '' }} "
-                id="profile-change-password">
-                @if (session('password_updated'))
-                <div class="alert  alert-success text-center">
-                  {{session('password_updated') }}
-                </div>
-                @endif
-                <form method="POST" action="{{ route('changePassword') }}">
-                  @csrf
-                  <div class="row mb-3">
-                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="password" type="password" class="form-control" id="currentPassword">
-                      @error('password')
-                      <p class="text-danger"> {{$message}}</p>
-                      @enderror
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="newpassword" type="password" class="form-control" id="newPassword">
-                      @error('newpassword')
-                      <p class="text-danger"> {{$message}}</p>
-                      @enderror
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
-                    <div class="col-md-8 col-lg-9">
-                      <input name="renewpassword" type="password" class="form-control" id="renewPassword">
-                      @error('renewpassword')
-                      <p class="text-danger"> {{$message}}</p>
-                      @enderror
-                    </div>
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary">Change Password</button>
-                    </div>
-                  </div>
-                </form><!-- End Change Password Form -->
-
-              </div>
-
+      
             </div><!-- End Bordered Tabs -->
 
           </div>

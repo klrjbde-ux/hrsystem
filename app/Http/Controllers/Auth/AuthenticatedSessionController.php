@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,6 +20,18 @@ class AuthenticatedSessionController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
+
+        $user = User::with('employee')
+            ->where('email', $request->email)
+            ->first();
+
+
+        if ($user && $user->isBlockedFromLogin()) {
+            return back()->withErrors([
+                'email' => 'Your account is inactive. Please contact HR.'
+            ])->onlyInput('email');
+        }
+
 
         if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
             $request->session()->regenerate();

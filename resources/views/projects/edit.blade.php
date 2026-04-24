@@ -34,7 +34,7 @@
                         <label for="site_link" class="form-label">Site Link</label>
                         <input type="url" name="site_link" id="site_link" class="form-control" value="{{ old('site_link', $project->site_link) }}">
                         @error('site_link')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -43,17 +43,17 @@
                         <label for="project_file" class="form-label">Project File</label>
                         <input type="file" name="project_file" id="project_file" class="form-control">
                         @error('project_file')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
 
                         {{-- Show existing file with download --}}
                         @if($project->project_file)
-                            <p class="mt-2">
-                                Existing File: 
-                                <a href="{{ asset('storage/' . $project->project_file) }}" target="_blank" class="btn btn-sm btn-success" download>
-                                    Download
-                                </a>
-                            </p>
+                        <p class="mt-2">
+                            Existing File:
+                            <a href="{{ asset('storage/' . $project->project_file) }}" target="_blank" class="btn btn-sm btn-success" download>
+                                Download
+                            </a>
+                        </p>
                         @endif
                     </div>
 
@@ -61,7 +61,7 @@
                     <div class="mb-3">
                         <label for="start_date" class="form-label">Start Date</label>
                         <input type="date" name="start_date" id="start_date" class="form-control"
-                               value="{{ old('start_date', \Carbon\Carbon::parse($project->start_date)->format('Y-m-d')) }}">
+                            value="{{ old('start_date', \Carbon\Carbon::parse($project->start_date)->format('Y-m-d')) }}">
                         @error('start_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -71,24 +71,24 @@
                     <div class="mb-3">
                         <label for="end_date" class="form-label">End Date</label>
                         <input type="date" name="end_date" id="end_date" class="form-control"
-                               value="{{ old('end_date', \Carbon\Carbon::parse($project->end_date)->format('Y-m-d')) }}">
+                            value="{{ old('end_date', \Carbon\Carbon::parse($project->end_date)->format('Y-m-d')) }}">
                         @error('end_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    {{-- Status --}}
+                    {{-- Priority --}}
                     <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select name="status" id="status" class="form-select" required>
-                            <option value="not_started" {{ old('status', $project->status) == 'not_started' ? 'selected' : '' }}>Not Started</option>
-                            <option value="in_progress" {{ old('status', $project->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="completed" {{ old('status', $project->status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <label for="priority" class="form-label">Priority</label>
+                        <select name="priority" id="priority" class="form-select" required>
+                            <option value="low" {{ old('priority', $project->priority) == 'low' ? 'selected' : '' }}>Low</option>
+                            <option value="medium" {{ old('priority', $project->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="high" {{ old('priority', $project->priority) == 'high' ? 'selected' : '' }}>High</option>
                         </select>
-                        @error('status')
-                            <span class="text-danger">{{ $message }}</span>
+                        @error('priority')
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+                   
 
                     <button type="submit" class="btn btn-primary">Update Project</button>
                 </form>
