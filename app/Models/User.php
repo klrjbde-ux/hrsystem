@@ -117,5 +117,17 @@ class User extends Authenticatable
     //     return $this->belongsToMany(role::class, 'model_has_roles', 'model_id', 'role_id');
     // }
 
+    public function isBlockedFromLogin()
+    {
+        if (!$this->employee) {
+            return false;
+        }
+
+        return in_array($this->employee->emp_status, [
+            'Terminate',
+            'Resign'
+        ]);
+    }
+
 
 }
