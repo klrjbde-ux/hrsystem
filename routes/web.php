@@ -28,6 +28,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\RoutineController;
+use App\Http\Controllers\Auth\RegisterController; // <-- add this
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\InterviewController;
@@ -59,6 +60,7 @@ Route::get('/addemployee', [EmployeeController::class, 'EmployeDetails'])->name(
 Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    // Auth::routes(['register' => false]); // disables default /register
 
 
 
@@ -66,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::get('myprofile/{employee}', [EmployeeController::class, 'show'])->name('myprofile.show');
-    Route::post('/register', 'Auth\RegisterController@register')->name('register');
+    // Route::post('/register', 'Auth\RegisterController@register')->name('register');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
     Route::put('/employee/{id}', [EmployeeController::class, 'update'])->name('employee.update');
 
@@ -180,18 +182,19 @@ Route::middleware('auth')->group(function () {
 
     // Daily Standup (Admin & HR only)
     Route::middleware(['role:admin|hr_manager'])->group(function () {
-        Route::get('/daily-standup', [DailyStandupController::class, 'index'])->name('dailystandup.index');
-        Route::get('/daily-standup/create', [DailyStandupController::class, 'create'])->name('dailystandup.create');
-        Route::post('/daily-standup', [DailyStandupController::class, 'store'])->name('dailystandup.store');
-        Route::get('/daily-standup/{id}/edit', [DailyStandupController::class, 'edit'])->name('dailystandup.edit');
-        Route::post('/daily-standup/{id}', [DailyStandupController::class, 'update'])->name('dailystandup.update');
-        Route::get('/daily-standup/{id}/delete', [DailyStandupController::class, 'destroy'])->name('dailystandup.delete');
-
-        Route::get('/manage', [DailyStandupController::class, 'manage'])->name('dailystandup.manage');
-        Route::get('/data', [DailyStandupController::class, 'dataList'])->name('dailystandup.data');
-        Route::post('/store-ajax', [DailyStandupController::class, 'storeAjax'])->name('dailystandup.storeAjax');
-        Route::post('/update-ajax', [DailyStandupController::class, 'updateAjax'])->name('dailystandup.updateAjax');
-        Route::post('/delete-ajax', [DailyStandupController::class, 'destroyAjax'])->name('dailystandup.deleteAjax');
+        Route::prefix('daily-standup')->group(function () {
+            Route::get('/', [DailyStandupController::class, 'index'])->name('dailystandup.index');
+            Route::get('/create', [DailyStandupController::class, 'create'])->name('dailystandup.create');
+            Route::post('/', [DailyStandupController::class, 'store'])->name('dailystandup.store');
+            Route::post('/store-ajax', [DailyStandupController::class, 'storeAjax'])->name('dailystandup.storeAjax');
+            Route::get('/manage', [DailyStandupController::class, 'manage'])->name('dailystandup.manage');
+            Route::get('/data', [DailyStandupController::class, 'dataList'])->name('dailystandup.data');
+            Route::post('/update-ajax', [DailyStandupController::class, 'updateAjax'])->name('dailystandup.updateAjax');
+            Route::post('/delete-ajax', [DailyStandupController::class, 'destroyAjax'])->name('dailystandup.deleteAjax');
+            Route::get('/{id}/edit', [DailyStandupController::class, 'edit'])->name('dailystandup.edit');
+            Route::post('/{id}', [DailyStandupController::class, 'update'])->name('dailystandup.update');
+            Route::get('/{id}/delete', [DailyStandupController::class, 'destroy'])->name('dailystandup.delete');
+        });
     });
 
 
