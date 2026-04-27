@@ -172,32 +172,42 @@ class TaskController extends Controller
         $newStatus = $request->status;
         $currentStatus = $task->status;
 
-        $isSQA = $user?->hasRole('sqa') ?? false;
+        $isQaController = $user?->hasAnyRole(['sqa', 'qa']) ?? false;
 
         // Allowed transitions
         $allowedMoves = [
             'to_do' => ['in_progress'],
-            'in_progress' => ['to_do', 'completed', 'qa'],
+            'in_progress' => ['completed', 'qa'],
             'completed' => ['in_progress', 'qa'],
             'qa' => [],
             'qa_passed' => [],
             'qa_failed' => ['in_progress'],
         ];
 
-        // SQA FULL CONTROL
-        if ($isSQA) {
+        // QA/SQA can move only inside QA flow cards (no completed)
+        if ($isQaController) {
+            $allowedMoves = [
+                'to_do' => [],
+                'in_progress' => [],
+                'completed' => [],
+                'qa' => ['qa_passed', 'qa_failed'],
+                'qa_passed' => ['qa', 'qa_failed'],
+                'qa_failed' => ['qa', 'qa_passed'],
+            ];
+        } else {
+            // Assigned employees can move in dev flow, including backwards
             $allowedMoves = [
                 'to_do' => ['in_progress'],
-                'in_progress' => ['to_do', 'completed', 'qa', 'qa_passed', 'qa_failed'],
-                'completed' => ['in_progress', 'qa', 'qa_passed', 'qa_failed'],
-                'qa' => ['qa_passed', 'qa_failed', 'in_progress'],
-                'qa_passed' => ['qa', 'qa_failed', 'in_progress'],
-                'qa_failed' => ['qa', 'qa_passed', 'in_progress'],
+                'in_progress' => ['completed', 'qa'],
+                'completed' => ['in_progress', 'qa'],
+                'qa' => ['completed', 'in_progress'],
+                'qa_passed' => [],
+                'qa_failed' => ['in_progress'],
             ];
         }
 
         //  Developers only move their own tasks
-        if (!$isSQA && $task->user_id != $user->id) {
+        if (!$isQaController && $task->user_id != $user->id) {
             return response()->json(['error' => 'Not allowed'], 403);
         }
 
