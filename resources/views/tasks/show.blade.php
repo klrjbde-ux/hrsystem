@@ -245,20 +245,14 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select name="status" id="status" class="form-select" required>
-                                    <option value="to_do" {{ $task->status == 'to_do' ? 'selected' : '' }}>To Do</option>
-                                    <option value="in_progress" {{ $task->status == 'in_progress' ? 'selected' : '' }}>In
-                                        Progress</option>
-                                    <option value="qa" {{ $task->status == 'qa' ? 'selected' : '' }}>QA</option>
-                                    <option value="qa_passed" {{ $task->status == 'qa_passed' ? 'selected' : '' }}>QA Passed</option>
-                                    <option value="qa_failed" {{ $task->status == 'qa_failed' ? 'selected' : '' }}>QA Failed</option>
-                                    <option value="completed" {{ $task->status == 'completed' ? 'selected' : '' }}>
-                                        Completed</option>
+                                <label for="user_id" class="form-label">Assign Member</label>
+                                <select name="user_id" id="user_id" class="form-select" required>
+                                    @foreach($task->project->users as $user)
+                                    <option value="{{ $user->id }}" {{ $task->user_id == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                    @endforeach
                                 </select>
-                                @error('status')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -361,7 +355,7 @@
                             return;
                         }
 
-                        // ✅ Update UI without reload
+                        //  Update UI without reload
                         const label = document.querySelector(`#checklist-item-${itemId} .form-check-label`);
                         label.innerText = formData.get('name');
 

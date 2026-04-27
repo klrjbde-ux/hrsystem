@@ -10,9 +10,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
-
-
 class TaskController extends Controller
 {
     public function index(Project $project)
@@ -133,24 +130,32 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
-        $oldStatus = $task->status;
+        $oldUser = $task->user_id;
 
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority' => 'required|in:low,medium,high',
-            'status' => 'required|in:to_do,in_progress,completed,qa,qa_passed,qa_failed',
+            'user_id' => 'required|exists:users,id',
         ]);
 
-        $task->update($request->only(['title', 'description', 'due_date', 'priority', 'status']));
+        $task->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'priority' => $request->priority,
+            'user_id' => $request->user_id,
+        ]);
+
         $task->status_changed_at = now();
         $task->save();
 
-        if ($oldStatus !== $task->status) {
+
+        if ($oldUser != $task->user_id) {
             TaskHistory::create([
                 'task_id' => $task->id,
-                'old_status' => $oldStatus,
+                'old_status' => $task->status,
                 'new_status' => $task->status,
                 'changed_by' => $request->user()->id,
                 'assigned_to' => $task->user_id,
@@ -160,7 +165,6 @@ class TaskController extends Controller
         return redirect()->route('projects.tasks.index', $task->project_id)
             ->with('success', 'Task updated successfully.');
     }
-
     public function updateStatus(Request $request, Task $task)
     {
         $user = auth()->user();
@@ -423,7 +427,7 @@ class TaskController extends Controller
     }
     public function destroy(Task $task)
     {
-        // ✅ Only admin allowed
+
         if (!auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized');
         }
@@ -454,7 +458,6 @@ class TaskController extends Controller
 
             $path = $images[$index];
 
-            // ✅ FIX: handle full URL
             if (str_starts_with($path, 'http')) {
                 $path = str_replace(url('/storage/') . '/', '', $path);
             }
