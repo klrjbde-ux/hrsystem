@@ -61,7 +61,7 @@
                     <div class="mb-3">
                         <label for="start_date" class="form-label">Start Date</label>
                         <input type="date" name="start_date" id="start_date" class="form-control"
-                            value="{{ old('start_date', \Carbon\Carbon::parse($project->start_date)->format('Y-m-d')) }}">
+                            value="{{ old('start_date', optional($project->start_date)->format('Y-m-d')) }}" min="{{ now()->toDateString() }}" required>
                         @error('start_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -71,7 +71,7 @@
                     <div class="mb-3">
                         <label for="end_date" class="form-label">End Date</label>
                         <input type="date" name="end_date" id="end_date" class="form-control"
-                            value="{{ old('end_date', \Carbon\Carbon::parse($project->end_date)->format('Y-m-d')) }}">
+                            value="{{ old('end_date', optional($project->end_date)->format('Y-m-d')) }}" min="{{ now()->toDateString() }}" required>
                         @error('end_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror

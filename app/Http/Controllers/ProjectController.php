@@ -28,9 +28,11 @@ class ProjectController extends Controller
         // ✅ Start query (NO get yet)
         $projectsQuery = Project::whereIn('id', $projectIds)
             ->withCount([
+                'tasks as total_tasks',
                 'tasks as to_do_tasks' => fn($q) => $q->where('status', 'to_do'),
                 'tasks as in_progress_tasks' => fn($q) => $q->where('status', 'in_progress'),
-                'tasks as completed_tasks' => fn($q) => $q->where('status', 'completed')
+                'tasks as completed_tasks' => fn($q) => $q->where('status', 'completed'),
+                'tasks as qa_passed_tasks' => fn($q) => $q->where('status', 'qa_passed')
             ]);
 
         // ✅ Apply priority filter
@@ -79,13 +81,16 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_date' => 'nullable|date',
+            'start_date' => 'required|date|after_or_equal:today',
             'priority' => 'required|in:low,medium,high',
-            'end_date' => 'nullable|date',
+            'end_date' => 'required|date|after_or_equal:start_date|after_or_equal:today',
             'status' => 'nullable|in:not_started,in_progress,completed',
             'budget' => 'nullable|numeric',
             'site_link' => 'nullable|url',
             'project_file' => 'nullable|file|mimes:zip,rar,pdf,doc,docx|max:10240',
+        ], [
+            'start_date.after_or_equal' => 'Start date must be today or a future date.',
+            'end_date.after_or_equal' => 'End date must be the same as or after start date.',
         ]);
 
         $filePath = $request->hasFile('project_file')
@@ -133,20 +138,37 @@ class ProjectController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
-        $teamMembers = $project->users()
-            ->whereHas('employee', function ($q) {
-                $q->whereIn('department', ['Developer', 'SQA']);
-            })
-            ->get();
+        $project->loadCount([
+            'tasks as total_tasks',
+            'tasks as qa_passed_tasks' => fn($q) => $q->where('status', 'qa_passed'),
+        ]);
 
-        $users = User::whereHas('employee', function ($q) {
-            $q->whereIn('department', ['Developer', 'SQA']);
-        })->get();
+        $teamMembers = $project->users()->with('employee')->get();
 
+        $users = User::with('employee')->get();
+
+        $departments = $users
+            ->pluck('employee.department')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $designations = $users
+            ->pluck('employee.designation')
+            ->filter()
+            ->unique()
+            ->values();
         // Only show tasks assigned to current user
         $userTasks = $project->tasks()->where('user_id', auth()->id())->get();
 
-        return view('projects.show', compact('project', 'teamMembers', 'users', 'userTasks'));
+        return view('projects.show', compact(
+            'project',
+            'teamMembers',
+            'users',
+            'userTasks',
+            'departments',
+            'designations'
+        ));
     }
 
     public function edit(Project $project)
@@ -165,13 +187,16 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_date' => 'nullable|date',
+            'start_date' => 'required|date|after_or_equal:today',
             'priority' => 'required|in:low,medium,high',
-            'end_date' => 'nullable|date',
+            'end_date' => 'required|date|after_or_equal:start_date|after_or_equal:today',
             'status' => 'nullable|in:not_started,in_progress,completed',
             'budget' => 'nullable|numeric',
             'site_link' => 'nullable|url',
             'project_file' => 'nullable|file|mimes:zip,rar,pdf,doc,docx|max:10240',
+        ], [
+            'start_date.after_or_equal' => 'Start date must be today or a future date.',
+            'end_date.after_or_equal' => 'End date must be the same as or after start date.',
         ]);
 
         $filePath = $project->project_file;
