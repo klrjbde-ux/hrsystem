@@ -28,9 +28,14 @@
                             <strong>Status:</strong>
                             {{ $project->status == 'pending' ? 'Pending' : ($project->status == 'on_going' ? 'In Progress' : 'Completed') }}
                         </p> -->
+                        @php
+                        $derivedStatus = ($project->total_tasks > 0 && $project->qa_passed_tasks == $project->total_tasks)
+                        ? 'completed'
+                        : 'in_progress';
+                        @endphp
+
                         <p class="card-text">
-                            <strong>Status:</strong>
-                            {{ $project->status == 'pending' ? 'Pending' : ($project->status == 'on_going' ? 'In Progress' : 'Completed') }}
+                            <strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $derivedStatus)) }}
                             &nbsp;|&nbsp;
                             <strong>Priority:</strong>
                             <span class="badge 
@@ -78,16 +83,7 @@
                         </div>
 
                         <div class="row mt-3">
-                            @forelse ($teamMembers->filter(function($user) {
-                            $allowedDesignations = [
-                            'Web Developer',
-                            'Junior Web Developer',
-                            'Front-end Developer',
-                            'Software Quality Assurance'
-                            ];
-
-                            return in_array($user->employee->designation ?? '', $allowedDesignations);
-                            }) as $user)
+                            @forelse ($teamMembers as $user)
                             <div class="col-12 mb-3 d-flex">
                                 <div class="card w-100 h-100">
                                     <div class="card-body d-flex flex-column justify-content-between">
@@ -126,23 +122,35 @@
                             <input type="hidden" name="project_id" value="{{ $project->id }}">
 
                             <label class="form-label mb-2">Select Users</label>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <select id="departmentFilter" class="form-select">
+                                        <option value="">All Departments</option>
+                                        @foreach($departments as $dept)
+                                        <option value="{{ $dept }}">{{ $dept }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
+                                <div class="col-md-6">
+                                    <select id="designationFilter" class="form-select">
+                                        <option value="">All Designations</option>
+                                        @foreach($designations as $desig)
+                                        <option value="{{ $desig }}">{{ $desig }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             <div class="row g-2">
-                                @foreach ($users->filter(function($user) {
-                                $allowedDesignations = [
-                                'Web Developer',
-                                'Junior Web Developer',
-                                'Front-end Developer',
-                                'Software Quality Assurance'
-                                ];
-
-                                return in_array($user->employee->designation ?? '', $allowedDesignations);
-                                }) as $user)
+                                @foreach ($users as $user)
                                 @php
                                 $isMember = $teamMembers->contains($user->id);
                                 @endphp
 
-                                <div class="col-md-6">
+                                <div class="col-md-6 user-card"
+                                    data-department="{{ optional($user->employee)->department }}"
+                                    data-designation="{{ optional($user->employee)->designation }}">
+
                                     <div class="form-check p-2 border rounded {{ $isMember ? 'bg-light text-muted' : '' }}">
 
                                         <!-- Checkbox -->
@@ -239,5 +247,32 @@
     function submitRemoveForm() {
         document.getElementById('removeMemberForm').submit();
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const deptFilter = document.getElementById('departmentFilter');
+        const desigFilter = document.getElementById('designationFilter');
+
+        if (!deptFilter || !desigFilter) return;
+
+        function filterUsers() {
+            const cards = document.querySelectorAll('.user-card');
+
+            const dept = deptFilter.value.toLowerCase().trim();
+            const desig = desigFilter.value.toLowerCase().trim();
+
+            cards.forEach(card => {
+                const cardDept = (card.dataset.department || '').toLowerCase().trim();
+                const cardDesig = (card.dataset.designation || '').toLowerCase().trim();
+
+                const matchDept = !dept || cardDept === dept;
+                const matchDesig = !desig || cardDesig === desig;
+                card.style.display = (matchDept && matchDesig) ? '' : 'none';
+            });
+        }
+
+        deptFilter.addEventListener('change', filterUsers);
+        desigFilter.addEventListener('change', filterUsers);
+    });
 </script>
 @endsection

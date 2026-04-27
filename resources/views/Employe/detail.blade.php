@@ -22,16 +22,18 @@
 
     <div class="container profile-container text-center pt-4">
 
-      {{-- IMAGE --}}
-      @if($employee->image)
+     <div class="text-center">
+    @if($employee->image)
         <img src="{{ asset('storage/assets/profile_images/' . $employee->image) }}"
-             class="rounded-circle mb-3"
+             class="rounded-circle mb-3 object-fit-cover"
              width="130" height="130">
-      @else
-        <img src="{{ asset('storage/assets/profile_image/img2.jpeg') }}"
-             class="rounded-circle mb-3"
-             width="130" height="130">
-      @endif
+    @else
+        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3 mx-auto"
+             style="width:130px; height:130px;">
+            <i class="bi bi-camera text-muted" style="font-size:40px;"></i>
+        </div>
+    @endif
+</div>
 
       {{-- NAME --}}
       <h5>{{ $employee->firstname }} {{ $employee->lastname }}</h5>
