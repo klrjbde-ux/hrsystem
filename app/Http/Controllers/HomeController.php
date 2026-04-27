@@ -7,6 +7,8 @@ use App\Models\Employee;
 use App\Models\TotalLeaves;
 use App\Models\Attendance;
 use App\Models\CreateAdminLeaves;
+use App\Models\Appraisal;
+use App\Models\PerformanceReview;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -32,7 +34,11 @@ class HomeController extends Controller
         $hr = Employee::where('Department', '1')->count();
         $sqa = Employee::where('Department', '3')->count();
         $today = Carbon::today()->toDateString(); 
-        $presentEmp = Attendance::where('date', $today)->count(); 
+        $presentEmp = Attendance::where('date', $today)->count();
+        $todayAttendance = Attendance::with('employee')
+            ->whereDate('date', $today)
+            ->latest('id')
+            ->get();
         $totalLeaves = TotalLeaves::all();
         $employeename = Employee::all();
         $leavereqest = CreateAdminLeaves::with(['TotalLeaves', 'Employee'])
@@ -47,7 +53,23 @@ class HomeController extends Controller
         $all_employees = Employee::count(); // Total employees
         // Calculate working employees
          $working_employees = $all_employees - ($terminated_employee + $resigned_employee);
+
+        $todayAppraisals = Appraisal::with(['employee', 'reviewer'])
+            ->whereDate('review_date', $today)
+            ->latest('id')
+            ->take(8)
+            ->get();
+
+        $reviewsByStatusToday = PerformanceReview::whereDate('created_at', $today)
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $totalReportsToday = PerformanceReview::whereDate('created_at', $today)->count()
+            + Appraisal::whereDate('review_date', $today)->count();
+
         return view('home', compact('employees', 'user','leavereqest', 'presentEmp', 'absentemp', 'hr', 'develper', 'sqa'
-        , 'terminated_employee','resigned_employee','working_employees'));
+        , 'terminated_employee','resigned_employee','working_employees', 'todayAttendance', 'todayAppraisals', 'reviewsByStatusToday', 'totalReportsToday'));
     }
 }

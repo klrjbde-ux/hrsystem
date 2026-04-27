@@ -17,7 +17,7 @@
     <div class="row">
 
       <!-- Left side columns -->
-      <div class="col-lg-8">
+      <div class="col-lg-12">
         <div class="row">
 
           <!-- Sales Card -->
@@ -112,57 +112,116 @@
             </div>
           </div><!-- End Customers Card -->
 
+          <!-- Attendance -->
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body pb-0">
+                <h5 class="card-title">Attendance <span style="color: #012970"> | Today</span></h5>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge bg-success fs-6">Present: {{ $presentEmp }}</span>
+                  <span class="badge bg-danger fs-6">Absent: {{ $absentemp }}</span>
+                </div>
+
+                <h6 class="mb-2">Employee Attendance Details</h6>
+                <div class="table-responsive mb-3">
+                  <table class="table table-sm table-striped align-middle">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>In Time</th>
+                        <th>Out Time</th>
+                        <th>Total Time</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @forelse(($todayAttendance ?? collect()) as $index => $attendance)
+                      <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $attendance->employee ? ($attendance->employee->firstname . ' ' . $attendance->employee->lastname) : 'N/A' }}</td>
+                        <td>{{ $attendance->first_time_in ?? 'N/A' }}</td>
+                        <td>{{ $attendance->last_time_out ?? 'N/A' }}</td>
+                        <td>{{ $attendance->total_time ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($attendance->status ?? 'Present') }}</td>
+                      </tr>
+                      @empty
+                      <tr>
+                        <td colspan="6" class="text-muted">No attendance marked today.</td>
+                      </tr>
+                      @endforelse
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Attendance -->
+
           <!-- Reports -->
           <div class="col-12">
             <div class="card">
 
               <div class="card-body">
                 <h5 class="card-title">Reports <span style="color: #012970"> | Today</span></h5>
+                <div class="d-flex flex-wrap gap-3 mb-3">
+                  <span class="badge bg-primary fs-6">Total Reports: {{ $totalReportsToday ?? 0 }}</span>
+                  <span class="badge bg-success fs-6">Today Appraisals: {{ ($todayAppraisals ?? collect())->count() }}</span>
+                  <a href="{{ route('performance.reports.index') }}" class="btn btn-sm btn-outline-primary">Open Performance Reports</a>
+                </div>
 
-                <!-- Line Chart -->
-                <div id="reportsChart"></div>
+                <h6 class="mb-2">Review Status Summary (Today)</h6>
+                <div class="table-responsive mb-3">
+                  <table class="table table-sm table-bordered align-middle">
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @forelse(($reviewsByStatusToday ?? []) as $status => $count)
+                      <tr>
+                        <td>{{ ucfirst(str_replace('_', ' ', $status)) }}</td>
+                        <td>{{ $count }}</td>
+                      </tr>
+                      @empty
+                      <tr>
+                        <td colspan="2" class="text-muted">No performance review status recorded today.</td>
+                      </tr>
+                      @endforelse
+                    </tbody>
+                  </table>
+                </div>
 
-                <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-
-                <script>
-                  var xValues = ["Developer", "HR", "SQA"];
-                  var yValues = [{
-                    {
-                      $develper
-                    }
-                  }, {
-                    {
-                      $hr
-                    }
-                  }, {
-                    {
-                      $sqa
-                    }
-                  }, 0];
-                  var barColors = ["red", "green", "blue"];
-
-                  new Chart("myChart", {
-                    type: "bar",
-                    data: {
-                      labels: xValues,
-                      datasets: [{
-                        backgroundColor: barColors,
-                        data: yValues
-                      }]
-                    },
-                    options: {
-                      legend: {
-                        display: false
-                      },
-                      title: {
-                        display: true,
-                        text: "Employees data"
-                      }
-                    }
-                  });
-                </script>
-
-                <!-- BAR Chart -->
+                <h6 class="mb-2">Appraisals Added Today</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped align-middle">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Reviewer</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @forelse(($todayAppraisals ?? collect()) as $index => $appraisal)
+                      <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $appraisal->employee ? ($appraisal->employee->firstname . ' ' . $appraisal->employee->lastname) : 'N/A' }}</td>
+                        <td>{{ $appraisal->reviewer ? ($appraisal->reviewer->firstname . ' ' . $appraisal->reviewer->lastname) : 'N/A' }}</td>
+                        <td>{{ $appraisal->rating ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($appraisal->status ?? 'N/A') }}</td>
+                      </tr>
+                      @empty
+                      <tr>
+                        <td colspan="5" class="text-muted">No appraisal records added today.</td>
+                      </tr>
+                      @endforelse
+                    </tbody>
+                  </table>
+                </div>
 
               </div>
 
@@ -283,7 +342,7 @@
       </div><!-- End Left side columns -->
 
       <!-- Right side columns -->
-      <div class="col-lg-4">
+      <div class="col-lg-4 d-none">
 
         <!-- Recent Activity -->
         <!-- <div class="card">
@@ -407,67 +466,7 @@
         </div>
       </div>End Budget Report -->
 
-        <!-- Website Traffic -->
-        <div class="card">
-
-          <div class="card-body pb-0">
-            <h5 class="card-title">Attandance<span style="color: #012970"> | Today</span></h5>
-
-            <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
-
-            <script>
-              document.addEventListener("DOMContentLoaded", () => {
-                echarts.init(document.querySelector("#trafficChart")).setOption({
-                  tooltip: {
-                    trigger: 'item'
-                  },
-                  legend: {
-                    top: '5%',
-                    left: 'center'
-                  },
-                  series: [{
-                    name: 'Attandance',
-                    type: 'pie',
-                    radius: ['40%', '70%'],
-                    avoidLabelOverlap: false,
-                    label: {
-                      show: false,
-                      position: 'center'
-                    },
-                    emphasis: {
-                      label: {
-                        show: true,
-                        fontSize: '18',
-                        fontWeight: 'bold'
-                      }
-                    },
-                    labelLine: {
-                      show: false
-                    },
-                    data: [{
-                        value: {
-                          {
-                            $absentemp
-                          }
-                        },
-                        name: 'Absent'
-                      },
-                      {
-                        value: {
-                          {
-                            $presentEmp
-                          }
-                        },
-                        name: 'Present'
-                      },
-                    ]
-                  }]
-                });
-              });
-            </script>
-
-          </div>
-        </div><!-- End Website Traffic -->
+        <!-- Website Traffic removed from right side -->
 
 
 
