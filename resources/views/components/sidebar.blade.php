@@ -49,11 +49,15 @@
                         <i class="bi bi-circle"></i><span>Employee Attendance</span>
                     </a>
                 </li>
+
+                <!--
                 <li>
                     <a href="{{route('addattendance')}}">
                         <i class="bi bi-circle"></i><span>Add Attendance</span>
                     </a>
                 </li>
+            -->
+
                 <li>
                     <a href="{{route('view')}}">
                         <i class="bi bi-circle"></i><span>View Attendance</span>
@@ -282,33 +286,50 @@
                         <i class="bi bi-circle"></i> Projects
                     </a>
                 </li>
+
+                 <!--
                 <li>
                     <a href="{{ route('projects.index') }}">
                         <i class="bi bi-circle"></i> Tasks
                     </a>
                 </li>
+            -->
+
+             <!--
                 <li>
                     <a
                         href="{{ route('routines.index') }}">
                         <i class="bi bi-circle"></i> Routines
                     </a>
                 </li>
+            -->
+
+             <!--
                 <li>
                     <a href="{{ route('notes.index') }}">
                         <i class="bi bi-circle"></i> Notes
                     </a>
                 </li>
+
+            -->
+
+             <!--
                 <li>
                     <a
                         href="{{ route('reminders.index') }}">
                         <i class="bi bi-circle"></i> Reminders
                     </a>
                 </li>
+            -->
+
+             <!--
                 <li>
                     <a href="{{ route('files.index') }}">
                         <i class="bi bi-circle"></i> Files
                     </a>
                 </li>
+            -->
+                
             </ul>
         </li><!-- Setting -->
 </aside>
