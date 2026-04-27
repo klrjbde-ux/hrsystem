@@ -228,7 +228,7 @@
                         <div class="card mb-3 kanban-item" data-id="{{ $task->id }}" data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
                             <div class="card-body">
 
                                 <h5 class="card-title">{{ $task->title }}
@@ -295,7 +295,7 @@
                         <div class="card mb-3 kanban-item" data-id="{{ $task->id }}" data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
                             <div class="card-body">
 
                                 <h5 class="card-title">{{ $task->title }}
@@ -362,7 +362,7 @@
                         <div class="card mb-3 kanban-item" data-id="{{ $task->id }}" data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
                             <div class="card-body">
 
                                 <h5 class="card-title">{{ $task->title }}
@@ -430,7 +430,7 @@
                         <div class="card mb-3 kanban-item" data-id="{{ $task->id }}" data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
                             <div class="card-body">
 
                                 <h5 class="card-title">{{ $task->title }}
@@ -498,17 +498,35 @@
                             data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
 
                             <div class="card-body">
-                                <h5 class="card-title">
-                                    {{ $task->title }}
-                                    <span class="badge text-white {{ $task->priority == 'low' ? 'bg-success' : ($task->priority == 'medium' ? 'bg-warning' : 'bg-danger') }}">
+                                <h5 class="card-title">{{ $task->title }}
+                                    <span style="font-size: 12px; "
+                                        class="badge text-white {{ $task->priority == 'low' ? 'bg-success' : ($task->priority == 'medium' ? 'bg-warning' : 'bg-danger') }}">
                                         {{ ucfirst($task->priority) }}
                                     </span>
                                 </h5>
 
-                                <!-- ✅ FIXED: Button inside loop -->
+                                <p class="mb-2 text-muted">
+                                    <strong>Assigned To :</strong> {{ $task->user->name }}
+                                </p>
+
+                                <p class="mb-2 text-muted">
+                                    <strong>Description :</strong> {{ $task->description }}
+                                </p>
+
+                                <p class="mb-2 text-muted">
+                                    <strong>Department :</strong> {{ $task->user->employee->department }}
+                                </p>
+
+                                <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button class="btn btn-dark btn-sm commentBtn" data-id="{{ $task->id }}"
+                                    data-bs-toggle="modal" data-bs-target="#commentsModal">
+                                    <i class="bi bi-chat-dots"></i>
+                                </button>
                                 <button
                                     class="btn btn-secondary btn-sm trackHistoryBtn"
                                     data-id="{{ $task->id }}"
@@ -549,17 +567,35 @@
                             data-user="{{ $task->user_id }}"
                             data-priority="{{ $task->priority }}"
                             data-department="{{ strtolower($task->user->employee->department) }}"
-                            draggable="{{ auth()->id() == $task->user_id ? 'true' : 'false' }}">
+                            draggable="{{ (auth()->id() == $task->user_id || auth()->user()->hasAnyRole('sqa|qa')) ? 'true' : 'false' }}">
 
                             <div class="card-body">
-                                <h5 class="card-title">
-                                    {{ $task->title }}
-                                    <span class="badge text-white {{ $task->priority == 'low' ? 'bg-success' : ($task->priority == 'medium' ? 'bg-warning' : 'bg-danger') }}">
+                                <h5 class="card-title">{{ $task->title }}
+                                    <span style="font-size: 12px; "
+                                        class="badge text-white {{ $task->priority == 'low' ? 'bg-success' : ($task->priority == 'medium' ? 'bg-warning' : 'bg-danger') }}">
                                         {{ ucfirst($task->priority) }}
                                     </span>
                                 </h5>
 
-                                <!-- ✅ FIXED -->
+                                <p class="mb-2 text-muted">
+                                    <strong>Assigned To :</strong> {{ $task->user->name }}
+                                </p>
+
+                                <p class="mb-2 text-muted">
+                                    <strong>Description :</strong> {{ $task->description }}
+                                </p>
+
+                                <p class="mb-2 text-muted">
+                                    <strong>Department :</strong> {{ $task->user->employee->department }}
+                                </p>
+
+                                <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button class="btn btn-dark btn-sm commentBtn" data-id="{{ $task->id }}"
+                                    data-bs-toggle="modal" data-bs-target="#commentsModal">
+                                    <i class="bi bi-chat-dots"></i>
+                                </button>
                                 <button
                                     class="btn btn-secondary btn-sm trackHistoryBtn"
                                     data-id="{{ $task->id }}"
@@ -825,6 +861,17 @@
         const kanbanLists = document.querySelectorAll('.kanban-list');
         const createTaskModal = document.getElementById('createTaskModal');
         const taskStatusInput = document.getElementById('task_status');
+        const showToast = (message, icon = 'warning') => {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: icon,
+                title: message,
+                showConfirmButton: false,
+                timer: 2200,
+                timerProgressBar: true
+            });
+        };
 
         if (createTaskModal) {
             createTaskModal.addEventListener('show.bs.modal', function(event) {
@@ -870,8 +917,8 @@
 
             const newStatus = dropzone.id;
             const assignedUserId = draggableElement.getAttribute('data-user');
-            const department = draggableElement.getAttribute('data-department').toLowerCase();
             const currentUserId = "{{ auth()->id() }}";
+            const currentUserIsSQA = @json(auth()->user()->hasAnyRole('sqa|qa'));
             const currentColumn = draggableElement.parentElement.id;
 
             // ----------------------------
@@ -879,39 +926,43 @@
             // ----------------------------
             const allowedMoves = {
                 to_do: ['in_progress'],
-                in_progress: ['to_do', 'completed', 'qa'], // user can move to QA
-                completed: ['in_progress', 'qa'], // user can move to QA
-                qa: [], // only SQA can move further
+                in_progress: ['completed', 'qa'],
+                completed: ['in_progress', 'qa'],
+                qa: ['completed', 'in_progress'],
                 qa_passed: [],
-                qa_failed: ['in_progress'], // SQA can move back to in_progress if needed
+                qa_failed: ['in_progress'],
             };
 
             // SQA overrides
-            if (department === 'sqa') {
+            if (currentUserIsSQA) {
+                allowedMoves['to_do'] = [];
+                allowedMoves['in_progress'] = [];
+                allowedMoves['completed'] = [];
                 allowedMoves['qa'] = ['qa_passed', 'qa_failed'];
-                allowedMoves['qa_failed'] = ['in_progress'];
+                allowedMoves['qa_passed'] = ['qa', 'qa_failed'];
+                allowedMoves['qa_failed'] = ['qa', 'qa_passed'];
             }
 
             // ----------------------------
             // Permission check
             // ----------------------------
             const isAssignedUser = assignedUserId == currentUserId;
-            const isSQA = department === 'sqa';
+            const isSQA = currentUserIsSQA;
 
             // Normal users can move their own tasksd
             if (!isAssignedUser && !isSQA) {
-                alert("Only assigned user or SQA can move this task.");
+                showToast("Only assigned user or SQA can move this task.");
                 return;
             }
 
             // Only SQA can move tasks out of QAd
             if (currentColumn === 'qa' && !isSQA) {
-                alert("Only SQA can move tasks from QA.");
+                showToast("Only SQA can move tasks from QA.");
                 return;
             }
             // Check if the move is allowed
             if (!allowedMoves[currentColumn] || !allowedMoves[currentColumn].includes(newStatus)) {
-                alert("You are not allowed to move this task here.");
+                showToast("You are not allowed to move this task here.");
                 return;
             }
             // Move the card visually
