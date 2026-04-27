@@ -50,7 +50,7 @@
                     {{-- Start Date --}}
                     <div class="mb-3">
                         <label for="start_date" class="form-label">Start Date</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" class="form-control">
+                        <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" min="{{ now()->toDateString() }}" class="form-control" required>
                         @error('start_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -59,7 +59,7 @@
                     {{-- End Date --}}
                     <div class="mb-3">
                         <label for="end_date" class="form-label">End Date</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="form-control">
+                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" min="{{ now()->toDateString() }}" class="form-control" required>
                         @error('end_date')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror

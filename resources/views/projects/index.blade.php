@@ -50,12 +50,12 @@
                             {{ $project->description ?? 'No description available.' }}
                         </p>
 
-                       @if($project->created_at)
-    <p class="card-text">
-        <strong>Created on:</strong> 
-        {{ $project->created_at->format('Y-m-d') }}
-    </p>
-@endif
+                        @if($project->created_at)
+                        <p class="card-text">
+                            <strong>Created on:</strong>
+                            {{ $project->created_at->format('Y-m-d') }}
+                        </p>
+                        @endif
 
                         @if($project->site_link)
                         <p>
@@ -77,8 +77,14 @@
                         </p>
                         @endif
 
+                        @php
+                        $derivedStatus = ($project->total_tasks > 0 && $project->qa_passed_tasks == $project->total_tasks)
+                        ? 'completed'
+                        : 'in_progress';
+                        @endphp
+
                         <p class="card-text">
-                            <strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $project->status)) }}
+                            <strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $derivedStatus)) }}
                             &nbsp;|&nbsp;
                             <strong>Priority:</strong>
                             <span class="badge {{ $project->priority == 'low' ? 'bg-success' : ($project->priority == 'medium' ? 'bg-warning' : 'bg-danger') }}">
@@ -86,10 +92,10 @@
                             </span>
                             <br>
                             <strong>Deadline:</strong>
-                            @if($project->end_date && $project->end_date->isFuture())
-                            {{ $project->end_date->diffForHumans() }}
-                            @else
+                            @if($project->deadline_text === 'Deadline Passed')
                             <span class="text-danger">Deadline Passed</span>
+                            @else
+                            {{ $project->deadline_text }}
                             @endif
                         </p>
 
@@ -109,7 +115,7 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
-                            <form action="{{ route('projects.destroy', $project->id) }}"
+                            <form action="{{ route( 'projects.destroy', $project->id) }}"
                                 method="POST"
                                 class="d-inline delete-form">
                                 @csrf
