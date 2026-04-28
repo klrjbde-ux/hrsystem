@@ -44,13 +44,25 @@
                             </span>
                         </p>
 
-                        <a href="{{ $project->site_link }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-globe"></i> Visit Website
-                        </a>
+                       {{-- Actions --}}
+<div class="d-flex gap-2 mt-2">
 
-                        <a href="{{ asset('storage/' . $project->project_file) }}" class="btn btn-success btn-sm" download>
-                            <i class="bi bi-download"></i> Download File
-                        </a>
+    {{-- Show Website Button ONLY if link exists --}}
+    @if(!empty($project->site_link))
+        <a href="{{ $project->site_link }}" target="_blank" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-globe"></i> Visit Website
+        </a>
+    @endif
+
+    {{-- Show Download Button ONLY if file exists --}}
+    @if(!empty($project->project_file))
+        <a href="{{ asset('storage/' . $project->project_file) }}" 
+           class="btn btn-success btn-sm" download>
+            <i class="bi bi-download"></i> Download File
+        </a>
+    @endif
+
+</div>
 
                         <h5 class="mt-4">Project Progress</h5>
                         @php

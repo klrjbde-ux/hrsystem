@@ -115,8 +115,8 @@ class SallaryController extends Controller
             $salaryRecord = new Salary_count($salaryData);
             $salaryRecord->save();
         }
-        return redirect()->route('home')->with('success', 'Processed salaries successfully.');
-    }
+return redirect()->route('salary.index')
+    ->with('success', 'Salaries of all employees generated successfully');    }
     public function addOrDetction($id)
     {
         $types = bonusDetuctionTypes::all();
