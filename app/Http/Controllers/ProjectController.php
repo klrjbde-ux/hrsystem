@@ -81,16 +81,18 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_date' => 'required|date|after_or_equal:today',
+               // ✅ Start: today or past
+    'start_date' => 'required|date|before_or_equal:today',
             'priority' => 'required|in:low,medium,high',
-            'end_date' => 'required|date|after_or_equal:start_date|after_or_equal:today',
+             // ✅ End: today or future + >= start
+    'end_date' => 'required|date|after_or_equal:start_date|after_or_equal:today',
             'status' => 'nullable|in:not_started,in_progress,completed',
             'budget' => 'nullable|numeric',
             'site_link' => 'nullable|url',
             'project_file' => 'nullable|file|mimes:zip,rar,pdf,doc,docx|max:10240',
         ], [
-            'start_date.after_or_equal' => 'Start date must be today or a future date.',
-            'end_date.after_or_equal' => 'End date must be the same as or after start date.',
+              'start_date.before_or_equal' => 'Start date cannot be in the future.',
+    'end_date.after_or_equal' => 'End date must be today or after start date.',
         ]);
 
         $filePath = $request->hasFile('project_file')
@@ -187,16 +189,15 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'priority' => 'required|in:low,medium,high',
-            'end_date' => 'required|date|after_or_equal:start_date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'status' => 'nullable|in:not_started,in_progress,completed',
             'budget' => 'nullable|numeric',
             'site_link' => 'nullable|url',
             'project_file' => 'nullable|file|mimes:zip,rar,pdf,doc,docx|max:10240',
         ], [
-            'start_date.after_or_equal' => 'Start date must be today or a future date.',
-            'end_date.after_or_equal' => 'End date must be the same as or after start date.',
+           'end_date.after_or_equal' => 'End date must be the same as or after start date.',
         ]);
 
         $filePath = $project->project_file;

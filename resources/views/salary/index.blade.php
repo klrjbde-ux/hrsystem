@@ -119,14 +119,23 @@
     </section>
 </main>
 @endsection
-
 @section('js')
 <script>
-    window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            const successAlert = document.getElementById('alert-success');
-            if (successAlert) successAlert.style.display = 'none';
-        }, 3000);
-    });
+document.addEventListener('DOMContentLoaded', function () {
+
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        
+        alerts.forEach(alert => {
+            alert.style.transition = "opacity 0.5s ease";
+            alert.style.opacity = "0";
+
+            setTimeout(() => {
+                alert.remove();
+            }, 500); // remove after fade
+        });
+
+    }, 4000); // ⏱️ 4 seconds (you can change 3000–5000)
+});
 </script>
 @endsection

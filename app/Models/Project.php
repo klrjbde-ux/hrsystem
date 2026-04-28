@@ -79,9 +79,9 @@ class Project extends Model
         if ($totalTasks === 0) {
             $this->status = 'not_started';
         } else {
-            $completedTasks = $this->tasks()->where('status', 'completed')->count();
+            $qaPassedTasks = $this->tasks()->where('status', 'qa_passed')->count();
 
-            $this->status = ($completedTasks === $totalTasks)
+            $this->status = ($qaPassedTasks === $totalTasks)
                 ? 'completed'
                 : 'in_progress';
         }
@@ -92,4 +92,23 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class, 'project_teams', 'project_id', 'user_id');
     }
+public function getDeadlineTextAttribute(): string
+{
+    if (!$this->end_date) {
+        return 'No deadline set';
+    }
+
+    $today = \Carbon\Carbon::today(); // ignore time
+    $end = $this->end_date->copy()->startOfDay();
+
+    // ❌ Deadline passed
+    if ($end->lt($today)) {
+        return 'Deadline Passed';
+    }
+
+    // ✅ Calculate days difference (inclusive logic)
+    $days = $today->diffInDays($end) + 1;
+
+    return $days . ' day' . ($days > 1 ? 's' : '') . ' remaining';
+}
 }

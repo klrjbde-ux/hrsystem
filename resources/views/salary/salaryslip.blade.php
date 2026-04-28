@@ -7,6 +7,7 @@
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-12">
+							<div id="salary-slip-pdf-content">
 							<div class="card">
 								<div class="card-body">
 								<div class="d-flex align-items-center justify-content-between">
@@ -229,11 +230,14 @@
 										<div class="row no-print pt-3">
 											<div class="col-12 text-right">
 											@if(Auth::user()->isAllowed('web:Pdf:generateSlipPDF'))
-												<a href="{{ route('pdf', ['id' => $salary->id, 'employee_id' => $salary->employee->id]) }}" rel="noopener" target="_blank" class="btn btn-primary"><i class="fas fa-print"></i> Generate PDF</a>
+												<button type="button" id="generate-slip-pdf" class="btn btn-primary">
+													<i class="fas fa-print"></i> Generate PDF
+												</button>
 											@endif
 											</div>
 										</div>
 								</div>
+							</div>
 							</div>
 						</div>
 					</div>
@@ -249,3 +253,67 @@
 
 
 @stop
+
+@section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const generateButton = document.getElementById('generate-slip-pdf');
+        const slipContent = document.getElementById('salary-slip-pdf-content');
+
+        if (!generateButton || !slipContent) {
+            return;
+        }
+
+        generateButton.addEventListener('click', async function () {
+            const originalLabel = generateButton.innerHTML;
+            generateButton.disabled = true;
+            generateButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                if (!window.html2canvas || !window.jspdf) {
+                    throw new Error('PDF libraries failed to load.');
+                }
+
+                const canvas = await window.html2canvas(slipContent, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    scrollY: -window.scrollY
+                });
+
+                const imageData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const imageWidth = pageWidth - 10;
+                const imageHeight = (canvas.height * imageWidth) / canvas.width;
+
+                let remainingHeight = imageHeight;
+                let position = 5;
+
+                pdf.addImage(imageData, 'PNG', 5, position, imageWidth, imageHeight);
+                remainingHeight -= (pageHeight - 10);
+
+                while (remainingHeight > 0) {
+                    position = remainingHeight - imageHeight + 5;
+                    pdf.addPage();
+                    pdf.addImage(imageData, 'PNG', 5, position, imageWidth, imageHeight);
+                    remainingHeight -= (pageHeight - 10);
+                }
+
+                pdf.save('salary_slip_{{ $salary->id }}.pdf');
+            } catch (error) {
+                console.error('Salary slip PDF generation failed:', error);
+                alert('Unable to generate PDF right now. Please try again.');
+            } finally {
+                generateButton.disabled = false;
+                generateButton.innerHTML = originalLabel;
+            }
+        });
+    });
+</script>
+@endsection
